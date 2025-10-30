@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login Authentication Demo</title>
+  <style>
+    body{
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg,#e0f7fa,#e1bee7);
+      height:100vh; margin:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .card{
+      background:#fff; padding:28px; border-radius:12px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.12); width:360px; text-align:center;
+    }
+    h2{margin:0 0 16px 0; color:#2d2d2d;}
+    input{
+      width:90%; padding:10px; margin:10px 0; border-radius:8px;
+      border:1px solid #ccc; outline:none; font-size:14px;
+    }
+    button{
+      width:92%; padding:10px; border-radius:8px; border:none;
+      background:#5c6bc0; color:#fff; font-weight:600; cursor:pointer; margin-top:8px;
+    }
+    button:hover{opacity:0.95;}
+    .msg{color:#d32f2f; font-size:14px; min-height:18px; margin-top:8px;}
+    .small{font-size:12px; color:#555; margin-top:10px;}
+    #welcome{display:none;}
+    .info{background:#f1f8e9; padding:8px; border-radius:6px; margin-top:10px; font-size:13px; color:#33691e;}
+  </style>
+</head>
+<body>
+  <div class="card" id="loginCard">
+    <h2>Login — Authentication Demo</h2>
+    <input type="text" id="loginUsername" placeholder="Enter username (email)" />
+    <input type="password" id="loginPassword" placeholder="Enter password" />
+    <button onclick="login()">Login</button>
+    <p class="msg" id="loginMsg"></p>
+    <p class="small">(Demo credentials are pre-configured)</p>
+    <div class="info">
+      Demo credentials set: <br>
+      <strong>uname:</strong> csegirls123@gmail.com<br>
+      <strong>pass:</strong> CSE123
+    </div>
+  </div>
+
+  <div class="card" id="welcome">
+    <h2>Welcome, <span id="userDisplay"></span>!</h2>
+    <p class="small">You are authenticated (demo only).</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    (function initDemoCredentials(){
+      // Pre-set credentials only if not already present
+      const presetU = "csegirls123@gmail.com";
+      const presetP = "CSE123";
+
+      if(!localStorage.getItem("demo_username") || !localStorage.getItem("demo_password")){
+        localStorage.setItem("demo_username", presetU);
+        localStorage.setItem("demo_password", presetP);
+      }
+
+      // If user is already "logged in" (simple session flag), show welcome
+      if(localStorage.getItem("demo_logged_in") === "true"){
+        showWelcome(localStorage.getItem("demo_username"));
+      }
+    })();
+
+    function login(){
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value;
+      const storedU = localStorage.getItem("demo_username");
+      const storedP = localStorage.getItem("demo_password");
+      const msg = document.getElementById('loginMsg');
+
+      msg.style.color = "#d32f2f";
+      if(!u || !p){
+        msg.innerText = "Fields required!";
+        return;
+      }
+
+      if(u === storedU && p === storedP){
+        // set a simple session flag (demo)
+        localStorage.setItem("demo_logged_in", "true");
+        localStorage.setItem("demo_username", u); // keep username
+        msg.style.color = "green";
+        msg.innerText = "Login successful!";
+        setTimeout(()=> showWelcome(u), 600);
+      } else {
+        msg.innerText = "Invalid username or password!";
+      }
+    }
+
+    function showWelcome(username){
+      document.getElementById('loginCard').style.display = "none";
+      document.getElementById('welcome').style.display = "block";
+      document.getElementById('userDisplay').innerText = username;
+      document.getElementById('loginMsg').innerText = "";
+    }
+
+    function logout(){
+      localStorage.setItem("demo_logged_in","false");
+      document.getElementById('welcome').style.display = "none";
+      document.getElementById('loginCard').style.display = "block";
+      document.getElementById('loginUsername').value = "";
+      document.getElementById('loginPassword').value = "";
+    }
+  </script>
+</body>
+</html>
